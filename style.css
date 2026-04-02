@@ -1,0 +1,34 @@
+.ascii-container {
+  position: relative;
+  display: inline-block;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid yellow;
+}
+
+.border {
+  border: 2px solid blue;
+  margin: 0;
+}
+#test-box {
+  position: absolute;
+  font-size: medium;
+  font-family: monospace;
+}
+
+.ascii-art {
+  font-family: monospace;
+  font-size: 5px;
+  white-space: pre;
+  border: 1px solid red;
+}
+
+.window {
+  width: 200px;
+  height: 200px;
+  border: 1px solid black;
+}
