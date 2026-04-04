@@ -1,3 +1,7 @@
+body {
+  background-color: #fff8ec;
+}
+
 .ascii-container {
   position: relative;
   display: inline-block;
@@ -7,28 +11,33 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid yellow;
 }
 
 .border {
-  border: 2px solid blue;
   margin: 0;
 }
-#test-box {
+.window {
   position: absolute;
   font-size: medium;
   font-family: monospace;
+  padding: 0px 20px;
+}
+
+.header {
+  position: absolute;
+  font-size: medium;
+  font-family: monospace;
+  padding: 0px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ascii-art {
   font-family: monospace;
-  font-size: 5px;
   white-space: pre;
-  border: 1px solid red;
 }
 
-.window {
-  width: 200px;
-  height: 200px;
-  border: 1px solid black;
+.fill-horizontal {
+  width: 100%;
 }

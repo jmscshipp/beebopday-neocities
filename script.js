@@ -1,10 +1,24 @@
-function generateBorder(width, height) {
-  const top = "╔" + "─".repeat(width + 1) + "╗";
-  const middle = "│" + " ".repeat(width + 1) + "│";
-  const bottom = "╚" + "─".repeat(width + 1) + "╝";
+function generateWindowBorder(width, height) {
+  const top = "╔" + "─".repeat(width) + "╗";
+  const middle = "│" + " ".repeat(width) + "│";
+  const bottom = "╚" + "─".repeat(width) + "╝";
 
   let border = top + "\n";
-  for (let i = 0; i < height + 1; i++) {
+  for (let i = 0; i < height; i++) {
+    border += middle + "\n";
+  }
+  border += bottom;
+
+  return border;
+}
+
+function generateHeaderBorder(width, height) {
+  const top = "╔" + "═".repeat(width) + "╗";
+  const middle = "║" + " ".repeat(width) + "║";
+  const bottom = "╚" + "═".repeat(width) + "╝";
+
+  let border = top + "\n";
+  for (let i = 0; i < height; i++) {
     border += middle + "\n";
   }
   border += bottom;
@@ -25,7 +39,7 @@ function getCharSize() {
   return { charWidth, charHeight };
 }
 
-function wrapInAsciiBorder(element) {
+function wrapInAsciiBorder(element, type = "window") {
   // measure width and height
   const { charWidth, charHeight } = getCharSize();
   const width = Math.round(element.offsetWidth / charWidth);
@@ -36,7 +50,11 @@ function wrapInAsciiBorder(element) {
   wrapper.className = "wrapper";
   // create border
   const border = document.createElement("pre");
-  border.textContent = generateBorder(width, height);
+  if (type === "header") {
+    border.textContent = generateHeaderBorder(width, height);
+  } else {
+    border.textContent = generateWindowBorder(width, height);
+  }
   border.className = "border";
   // wrap the element
   element.parentNode.insertBefore(wrapper, element);
@@ -44,4 +62,9 @@ function wrapInAsciiBorder(element) {
   wrapper.appendChild(element);
 }
 
-wrapInAsciiBorder(document.getElementById("test-box"));
+document.querySelectorAll(".window").forEach((element) => {
+  wrapInAsciiBorder(element, "window");
+});
+document.querySelectorAll(".header").forEach((element) => {
+  wrapInAsciiBorder(element, "header");
+});
