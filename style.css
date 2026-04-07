@@ -42,6 +42,7 @@ body {
 .ascii-art {
   font-family: monospace;
   white-space: pre;
+  justify-self: center;
 }
 
 .arc-container {
