@@ -44,14 +44,13 @@ function wrapInAsciiBorder(element, type = "window") {
   const { charWidth, charHeight } = getCharSize();
   const width = Math.round(element.offsetWidth / charWidth);
   const height = Math.round(element.offsetHeight / charHeight);
-  console.log(`Element size: ${width} chars wide, ${height} chars tall`);
   // create wrapper
   const wrapper = document.createElement("div");
   wrapper.className = "wrapper";
   // create border
   const border = document.createElement("pre");
   if (type === "header") {
-    border.textContent = generateHeaderBorder(width, height);
+    border.textContent = generateHeaderBorder(width - 3, height);
   } else {
     border.textContent = generateWindowBorder(width, height);
   }

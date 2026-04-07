@@ -1,5 +1,7 @@
 body {
   background-color: #fff8ec;
+  height: 100vh;
+  margin: 0;
 }
 
 .ascii-container {
@@ -11,6 +13,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+  position: relative;
+  max-width: 100vw;
 }
 
 .border {
@@ -20,17 +25,18 @@ body {
   position: absolute;
   font-size: medium;
   font-family: monospace;
-  padding: 0px 20px;
+  max-width: 40vw;
+  padding: 0 10px;
 }
 
 .header {
-  position: absolute;
   font-size: medium;
   font-family: monospace;
-  padding: 0px 20px;
+  position: absolute;
+  width: calc(100% - 40px);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .ascii-art {
@@ -38,6 +44,12 @@ body {
   white-space: pre;
 }
 
-.fill-horizontal {
-  width: 100%;
+.arc-container {
+  position: relative;
+  height: 200px;
+}
+.test {
+  position: absolute;
+  top: 50;
+  left: 50;
 }
