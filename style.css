@@ -2,6 +2,8 @@ body {
   background-color: #fff8ec;
   height: 100vh;
   margin: 0;
+  font-size: medium;
+  font-family: monospace;
 }
 
 .ascii-container {
@@ -23,8 +25,6 @@ body {
 }
 .window {
   position: absolute;
-  font-size: medium;
-  font-family: monospace;
   max-width: 40vw;
   padding: 0 10px;
 }
@@ -53,4 +53,33 @@ body {
   position: absolute;
   top: 50;
   left: 50;
+}
+
+.side-by-side {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.center-self {
+  justify-self: center;
+}
+
+.no-indent-list {
+  padding: 0;
+  margin: 0;
+  list-style: disc;
+  margin-left: 20px;
+}
+
+.bordered-button {
+  border: none;
+  background: none;
+  position: absolute;
+  font-size: medium;
+  font-family: monospace;
+}
+.bordered-button:hover {
+  cursor: pointer;
+  color: white;
 }

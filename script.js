@@ -26,6 +26,11 @@ function generateHeaderBorder(width, height) {
   return border;
 }
 
+function generateButtonBorder(width, selected = false) {
+  console.log("selected", selected);
+  return "{" + (selected ? "▓" : "░").repeat(width) + "}";
+}
+
 function getCharSize() {
   // temporarily add text element to measure size
   const test = document.createElement("pre");
@@ -39,7 +44,7 @@ function getCharSize() {
   return { charWidth, charHeight };
 }
 
-function wrapInAsciiBorder(element, type = "window") {
+function wrapInAsciiBorder(element, type = "window", selected = false) {
   // measure width and height
   const { charWidth, charHeight } = getCharSize();
   const width = Math.round(element.offsetWidth / charWidth);
@@ -51,6 +56,8 @@ function wrapInAsciiBorder(element, type = "window") {
   const border = document.createElement("pre");
   if (type === "header") {
     border.textContent = generateHeaderBorder(width - 3, height);
+  } else if (type === "button") {
+    border.textContent = generateButtonBorder(width, selected);
   } else {
     border.textContent = generateWindowBorder(width, height);
   }
@@ -61,9 +68,36 @@ function wrapInAsciiBorder(element, type = "window") {
   wrapper.appendChild(element);
 }
 
+// generating ascii borders for all elements
+const buttons = document.querySelectorAll(".bordered-button");
+buttons.forEach((element) => {
+  wrapInAsciiBorder(element, "button");
+});
 document.querySelectorAll(".window").forEach((element) => {
   wrapInAsciiBorder(element, "window");
 });
 document.querySelectorAll(".header").forEach((element) => {
   wrapInAsciiBorder(element, "header");
+});
+
+// hover effect for buttons
+buttons.forEach((button) => {
+  button.addEventListener(
+    "mouseenter",
+    () =>
+      (button.parentElement.querySelector(".border").textContent =
+        generateButtonBorder(
+          Math.round(button.offsetWidth / getCharSize().charWidth),
+          true,
+        )),
+  );
+  button.addEventListener(
+    "mouseleave",
+    () =>
+      (button.parentElement.querySelector(".border").textContent =
+        generateButtonBorder(
+          Math.round(button.offsetWidth / getCharSize().charWidth),
+          false,
+        )),
+  );
 });
