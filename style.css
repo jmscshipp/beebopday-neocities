@@ -73,8 +73,8 @@ body {
 }
 
 .bordered-button {
-  border: none;
-  background: none;
+  text-decoration: none;
+  color: black;
   position: absolute;
   font-size: medium;
   font-family: monospace;
