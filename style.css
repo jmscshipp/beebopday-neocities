@@ -49,23 +49,35 @@ body {
   justify-self: center;
 }
 
-.arc-container {
-  position: relative;
-  height: 200px;
-}
-.test {
-  position: absolute;
-  top: 50;
-  left: 50;
-}
-
 .side-by-side {
   display: flex;
   gap: 20px;
 }
 
-.horizontal-stretch {
-  align-items: flex-end;
+.vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.square {
+  aspect-ratio: 1 / 1;
+}
+
+.horizontal-container {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  width: 80vw;
+  margin: 0 auto;
+}
+
+.ascii-flex {
+  align-self: flex-end;
+}
+
+.window-test {
+  border: 2px solid black;
 }
 
 .flex1 {
@@ -99,6 +111,7 @@ body {
   font-size: medium;
   font-family: monospace;
 }
+
 .bordered-button:hover {
   cursor: pointer;
   color: white;
