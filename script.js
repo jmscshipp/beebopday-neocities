@@ -27,7 +27,6 @@ function generateHeaderBorder(width, height) {
 }
 
 function generateButtonBorder(width, selected = false) {
-  console.log("selected", selected);
   return "{" + (selected ? "▓" : "░").repeat(width) + "}";
 }
 

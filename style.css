@@ -15,22 +15,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   position: relative;
-  max-width: 30vw;
-  height: 100%;
+  background-color: aliceblue;
 }
 
 .border {
   margin: 0;
 }
 .window {
-  position: absolute;
-  padding: 0 10px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .header {
@@ -66,7 +58,6 @@ body {
 
 .horizontal-container {
   display: flex;
-  align-items: stretch;
   gap: 20px;
   width: 80vw;
   margin: 0 auto;
