@@ -100,3 +100,52 @@ buttons.forEach((button) => {
         )),
   );
 });
+
+async function populateThoughtCabinet() {
+  const fileLocation = "/thoughts.json";
+  try {
+    let response = await fetch(fileLocation);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    let data = await response.json();
+    data.thoughts.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    document.getElementById("thought-title").innerHTML = data.thoughts[0].title;
+    document.getElementById("thought-content").innerHTML =
+      data.thoughts[0].content;
+    document.getElementById("thought-date").innerHTML = data.thoughts[0].date;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+async function populateChangeLog() {
+  const fileLocation = "/site-updates.json";
+  try {
+    let response = await fetch(fileLocation);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    let data = await response.json();
+    data.siteUpdates.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    const changeLog = document.getElementById("change-log");
+    for (update of data.siteUpdates) {
+      const container = document.createElement("div");
+      container.class = "";
+      const content = document.createElement("p");
+      content.class = "";
+      content.innerHTML = update.content;
+      const date = document.createElement("p");
+      date.class = "";
+      date.innerHTML = update.date;
+      container.appendChild(content);
+      container.appendChild(date);
+      changeLog.appendChild(container);
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+populateThoughtCabinet();
+populateChangeLog();

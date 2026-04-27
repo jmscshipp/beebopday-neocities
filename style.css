@@ -88,6 +88,15 @@ body {
   justify-self: center;
 }
 
+.bottom-corner {
+  justify-self: flex-end;
+  align-items: flex-end;
+}
+
+.scroll {
+  overflow: hidden;
+}
+
 .no-indent-list {
   padding: 0;
   margin: 0;
