@@ -142,6 +142,15 @@ async function populateChangeLog() {
       container.appendChild(date);
       changeLog.appendChild(container);
     }
+    document.fonts.ready.then(() => {
+      const charHeightNum = Math.ceil(
+        scrollbar.offsetHeight / getCharSize().charHeight,
+      );
+      updateScrollbar(charHeightNum);
+      scrollContent.addEventListener("scroll", () =>
+        updateScrollbar(charHeightNum),
+      );
+    });
   } catch (error) {
     console.error(error.message);
   }
@@ -149,3 +158,43 @@ async function populateChangeLog() {
 
 populateThoughtCabinet();
 populateChangeLog();
+
+// changelog scrollbar graphics
+const scrollContent = document.getElementById("change-log");
+const scrollbar = document.getElementById("scroll-bar");
+
+function updateScrollbar(charHeightNum) {
+  const scrollPercentage =
+    scrollContent.scrollTop /
+    (scrollContent.scrollHeight - scrollContent.clientHeight);
+  const thumbIndex = Math.round(scrollPercentage * (charHeightNum - 2));
+  let thumbString = "";
+  console.log(thumbIndex);
+  if (thumbIndex == 0) {
+    thumbString += "v";
+    thumbString += " ".repeat(charHeightNum - 1);
+  } else {
+    for (let i = 0; i < charHeightNum - 1; i++) {
+      console.log(
+        "i = " +
+          i +
+          " thumbIndex = " +
+          thumbIndex +
+          " charHeightNum - 2 = " +
+          (charHeightNum - 2),
+      );
+      if (i == thumbIndex) {
+        if (i == charHeightNum - 2) {
+          thumbString += "x";
+        } else {
+          thumbString += "v";
+        }
+      } else if (i <= thumbIndex) {
+        thumbString += ":";
+      } else {
+        thumbString += " ";
+      }
+    }
+  }
+  scrollbar.textContent = thumbString;
+}

@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASCII Scrollbar</title>
+    <style>
+      /* ============================================================
+       RESET & PAGE
+    ============================================================ */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #0d0d0d;
+        color: #c8c8c8;
+        font-family: monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      /* ============================================================
+       WRAPPER  — flex row: content | scrollbar
+    ============================================================ */
+      .scroll-wrapper {
+        display: flex;
+        width: 520px;
+        height: 400px;
+        border: 1px solid #333;
+        background: #111;
+      }
+
+      /* ============================================================
+       SCROLL CONTENT  — hide the native scrollbar
+    ============================================================ */
+      .scroll-content {
+        flex: 1;
+        overflow-y: scroll;
+        padding: 1rem 1.25rem;
+        line-height: 1.8;
+        font-size: 13px;
+
+        /* hide native scrollbar — Firefox */
+        scrollbar-width: none;
+      }
+      /* hide native scrollbar — Chrome / Safari / Edge */
+      .scroll-content::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* ============================================================
+       ASCII SCROLLBAR COLUMN
+    ============================================================ */
+      .ascii-bar {
+        width: 20px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid #333;
+        background: #0d0d0d;
+        user-select: none;
+        font-family: monospace;
+        font-size: 13px;
+      }
+
+      /* Up / down arrow buttons */
+      .ascii-bar .btn {
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        cursor: pointer;
+        color: #888;
+        flex-shrink: 0;
+      }
+      .ascii-bar .btn:hover {
+        color: #ccc;
+      }
+
+      /* Track — fills remaining height, anchors the thumb */
+      .ascii-track {
+        flex: 1;
+        position: relative; /* <-- thumb is positioned inside here */
+        overflow: hidden;
+      }
+
+      /* Track background: a column of dim characters */
+      .track-chars {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #2a2a2a;
+        font-size: 11px;
+        line-height: 1;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .track-chars span {
+        display: block;
+      }
+
+      /* Thumb — absolutely positioned, moved by JS */
+      .ascii-thumb {
+        position: absolute;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: grab;
+        color: #aaa;
+        font-size: 13px;
+        line-height: 1;
+      }
+      .ascii-thumb:active {
+        cursor: grabbing;
+      }
+      .ascii-thumb span {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scroll-wrapper">
+      <!-- Your page content goes here -->
+      <div class="scroll-content" id="scroll-content">
+        <pre>
+   _____  ____  ____  _____  _     _     ____   _   ____
+  /__ __\/  _ \/  _ \/__ __\/ \   / \   /  _ \ / \ /  __\
+    / \  | | \|| / \|  / \  | |   | |   | |_| || | |  \/|
+    | |  | |_/|| |-||  | |  | |_/\| |_/\|  _  || |_/\  |
+    \_/  \____/\_/ \|  \_/  \____/\____/\_/ | |\____/\_/
+                                             \_/
+      </pre
+        >
+        <p>
+          This is a custom ASCII scrollbar. The native scrollbar is hidden and
+          replaced with real DOM elements containing text characters.
+        </p>
+        <br />
+        <p>
+          The thumb character, track character, and arrow buttons are all just
+          text — swap them for anything in your monospace charset.
+        </p>
+        <br />
+        <p>┌─────────────────────────────┐</p>
+        <p>│ Good thumb chars: │</p>
+        <p>│ █ ▓ ▒ ░ # @ ■ ◆ * = │</p>
+        <p>│ │</p>
+        <p>│ Good track chars: │</p>
+        <p>│ │ | : · . (space) │</p>
+        <p>└─────────────────────────────┘</p>
+        <br />
+        <p>More content below to demonstrate scrolling...</p>
+        <br />
+        <p>Line 1 of extra content</p>
+        <p>Line 2 of extra content</p>
+        <p>Line 3 of extra content</p>
+        <p>Line 4 of extra content</p>
+        <p>Line 5 of extra content</p>
+        <p>Line 6 of extra content</p>
+        <p>Line 7 of extra content</p>
+        <p>Line 8 of extra content</p>
+        <p>Line 9 of extra content</p>
+        <p>Line 10 of extra content</p>
+        <p>Line 11 of extra content</p>
+        <p>Line 12 of extra content</p>
+        <br />
+        <p>~~~ end ~~~</p>
+      </div>
+
+      <!-- ASCII scrollbar -->
+      <div class="ascii-bar" id="ascii-bar">
+        <div class="btn" id="btn-up">▲</div>
+        <div class="ascii-track" id="ascii-track">
+          <div class="track-chars" id="track-fill"></div>
+          <div class="ascii-thumb" id="ascii-thumb"></div>
+        </div>
+        <div class="btn" id="btn-down">▼</div>
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // CONFIG — change these to customise the look
+      // ============================================================
+      const THUMB_CHAR = "?"; // character used to draw the thumb
+      const TRACK_CHAR = "│"; // character used to fill the track
+      const SCROLL_STEP = 60; // px scrolled per arrow-button click
+
+      // ============================================================
+      // ELEMENT REFS
+      // ============================================================
+      const content = document.getElementById("scroll-content");
+      const track = document.getElementById("ascii-track");
+      const thumb = document.getElementById("ascii-thumb");
+      const trackFill = document.getElementById("track-fill");
+      const btnUp = document.getElementById("btn-up");
+      const btnDown = document.getElementById("btn-down");
+
+      // ============================================================
+      // MEASURE — get the pixel height of one monospace character row
+      // ============================================================
+      function measureCharHeight() {
+        const probe = document.createElement("span");
+        probe.style.cssText =
+          "font-family:monospace;font-size:13px;line-height:1;position:absolute;visibility:hidden";
+        probe.textContent = "M";
+        document.body.appendChild(probe);
+        const h = probe.offsetHeight || 13;
+        probe.remove();
+        return h;
+      }
+
+      let CH = measureCharHeight(); // pixels per character row
+
+      // ============================================================
+      // THUMB SIZE  — proportional to visible / total content
+      // ============================================================
+      function thumbLines() {
+        const ratio = content.clientHeight / content.scrollHeight;
+        return Math.max(1, Math.round((ratio * track.offsetHeight) / CH));
+      }
+
+      // ============================================================
+      // THUMB POSITION  — maps scrollTop → top offset in the track
+      // ============================================================
+      function thumbTopPx() {
+        const maxScroll = content.scrollHeight - content.clientHeight;
+        if (maxScroll <= 0) return 0;
+        const scrollRatio = content.scrollTop / maxScroll;
+        const thumbH = thumbLines() * CH;
+        return scrollRatio * (track.offsetHeight - thumbH);
+      }
+
+      // ============================================================
+      // RENDER — rebuild thumb and track fill characters
+      // ============================================================
+      function render() {
+        const lines = thumbLines();
+        const topPx = thumbTopPx();
+
+        // Thumb: N spans of the thumb character
+        thumb.innerHTML = Array(lines)
+          .fill(`<span>${THUMB_CHAR}</span>`)
+          .join("");
+        thumb.style.top = topPx + "px";
+        thumb.style.height = lines * CH + "px";
+
+        // Track fill: enough chars to cover the full track height
+        const totalLines = Math.ceil(track.offsetHeight / CH);
+        trackFill.innerHTML = Array(totalLines)
+          .fill(`<span>${TRACK_CHAR}</span>`)
+          .join("");
+      }
+
+      // ============================================================
+      // DRAG  — mousedown on thumb, move anywhere, release anywhere
+      // ============================================================
+      let isDragging = false;
+      let dragStartY = 0;
+      let dragStartScroll = 0;
+
+      thumb.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        dragStartY = e.clientY;
+        dragStartScroll = content.scrollTop;
+        e.preventDefault(); // prevent text selection while dragging
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        const dy = e.clientY - dragStartY;
+        const thumbH = thumbLines() * CH;
+        const maxScroll = content.scrollHeight - content.clientHeight;
+        // scale: how many px of scroll per px of drag
+        const scale = maxScroll / (track.offsetHeight - thumbH);
+        content.scrollTop = dragStartScroll + dy * scale;
+      });
+
+      window.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
+
+      // ============================================================
+      // CLICK ON TRACK  — jump to clicked position
+      // ============================================================
+      track.addEventListener("click", (e) => {
+        if (thumb.contains(e.target)) return; // ignore clicks on the thumb itself
+        const rect = track.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        const thumbH = thumbLines() * CH;
+        const maxScroll = content.scrollHeight - content.clientHeight;
+        const ratio = (clickY - thumbH / 2) / (track.offsetHeight - thumbH);
+        content.scrollTop = ratio * maxScroll;
+      });
+
+      // ============================================================
+      // ARROW BUTTONS
+      // ============================================================
+      btnUp.addEventListener("click", () => content.scrollBy(0, -SCROLL_STEP));
+      btnDown.addEventListener("click", () => content.scrollBy(0, SCROLL_STEP));
+
+      // ============================================================
+      // SYNC  — re-render whenever scroll position or size changes
+      // ============================================================
+      content.addEventListener("scroll", render);
+
+      const ro = new ResizeObserver(() => {
+        CH = measureCharHeight();
+        render();
+      });
+      ro.observe(content);
+      ro.observe(track);
+
+      // Initial render
+      render();
+    </script>
+  </body>
+</html>

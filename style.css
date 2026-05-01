@@ -46,6 +46,10 @@ body {
   gap: 20px;
 }
 
+.side-by-side-no-gap {
+  display: flex;
+}
+
 .vertical-stack {
   display: flex;
   flex-direction: column;
@@ -94,9 +98,17 @@ body {
 }
 
 .scroll {
-  overflow: hidden;
+  overflow: auto;
+  height: 100px;
+  scrollbar-width: none;
 }
 
+#scroll-bar {
+  width: 1ch;
+  white-space: pre;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
 .no-indent-list {
   padding: 0;
   margin: 0;
