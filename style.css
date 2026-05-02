@@ -128,3 +128,11 @@ body {
   cursor: pointer;
   color: white;
 }
+
+.disabled {
+  display: none;
+}
+
+.construction-zone {
+  background-color: bisque;
+}

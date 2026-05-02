@@ -143,6 +143,11 @@ async function populateChangeLog() {
       changeLog.appendChild(container);
     }
     document.fonts.ready.then(() => {
+      // nothing to scroll
+      if (scrollContent.scrollHeight <= scrollContent.clientHeight) {
+        scrollbar.className = "disabled";
+        return;
+      }
       const charHeightNum = Math.ceil(
         scrollbar.offsetHeight / getCharSize().charHeight,
       );
@@ -171,8 +176,8 @@ function updateScrollbar(charHeightNum) {
   let thumbString = "";
   console.log(thumbIndex);
   if (thumbIndex == 0) {
-    thumbString += "v";
-    thumbString += " ".repeat(charHeightNum - 1);
+    thumbString += "o";
+    thumbString += ":".repeat(charHeightNum - 2);
   } else {
     for (let i = 0; i < charHeightNum - 1; i++) {
       console.log(
@@ -187,14 +192,33 @@ function updateScrollbar(charHeightNum) {
         if (i == charHeightNum - 2) {
           thumbString += "x";
         } else {
-          thumbString += "v";
+          thumbString += "o";
         }
-      } else if (i <= thumbIndex) {
-        thumbString += ":";
       } else {
-        thumbString += " ";
+        thumbString += ":";
       }
     }
   }
   scrollbar.textContent = thumbString;
+}
+
+const textDisplays = document.querySelectorAll(".construction-zone");
+let lastShiftedTime = 0;
+
+document.fonts.ready.then(() => {
+  textDisplays.forEach((textDisplay) => {
+    textDisplay.textContent = textDisplay.textContent.trim() + " ";
+  });
+  requestAnimationFrame(frame); // single loop for all
+});
+
+function frame(currentTime) {
+  if (currentTime - lastShiftedTime > 150) {
+    textDisplays.forEach((textDisplay) => {
+      const text = textDisplay.textContent;
+      textDisplay.textContent = text.slice(1) + text[0];
+    });
+    lastShiftedTime = currentTime;
+  }
+  requestAnimationFrame(frame);
 }
