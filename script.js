@@ -174,7 +174,6 @@ function updateScrollbar(charHeightNum) {
     (scrollContent.scrollHeight - scrollContent.clientHeight);
   const thumbIndex = Math.round(scrollPercentage * (charHeightNum - 2));
   let thumbString = "";
-  console.log(thumbIndex);
   if (thumbIndex == 0) {
     thumbString += "o";
     thumbString += ":".repeat(charHeightNum - 2);
@@ -202,23 +201,74 @@ function updateScrollbar(charHeightNum) {
   scrollbar.textContent = thumbString;
 }
 
-const textDisplays = document.querySelectorAll(".construction-zone");
+// under construction text animation
+const constructionZones = document.querySelectorAll(".construction-zone");
 let lastShiftedTime = 0;
 
 document.fonts.ready.then(() => {
-  textDisplays.forEach((textDisplay) => {
-    textDisplay.textContent = textDisplay.textContent.trim() + " ";
-  });
+  // setting up pre elements w/ text for each construction zone
+  for (const zone of constructionZones) {
+    zone.textContent = ""; // clear default text
+    let topText = document.createElement("pre");
+    topText.style.margin = "0";
+    topText.textContent =
+      "    ._   _|  _  ._     _  _  ._   _ _|_ ._     _ _|_ o  _  ._     ";
+    let bottomText = document.createElement("pre");
+    bottomText.style.margin = "0";
+    bottomText.textContent =
+      "|_| | | (_| (/_ |     (_ (_) | | _>  |_ | |_| (_  |_ | (_) | |    ";
+    zone.appendChild(topText);
+    zone.appendChild(bottomText);
+  }
   requestAnimationFrame(frame); // single loop for all
 });
 
-function frame(currentTime) {
-  if (currentTime - lastShiftedTime > 150) {
-    textDisplays.forEach((textDisplay) => {
-      const text = textDisplay.textContent;
-      textDisplay.textContent = text.slice(1) + text[0];
+function frame() {
+  // shifting text every 150ms
+  if (Date.now() - lastShiftedTime > 150) {
+    constructionZones.forEach((zone) => {
+      [...zone.children].forEach((textDisplay) => {
+        const text = textDisplay.textContent;
+        textDisplay.textContent = text.slice(1) + text[0];
+      });
     });
-    lastShiftedTime = currentTime;
+    lastShiftedTime = Date.now();
   }
   requestAnimationFrame(frame);
 }
+
+// time display
+const asciiNumberLookup = {
+  0: [" .--. ", ": ,. :", ": :: :", ": :; :", "`.__.'"],
+  1: ["  ,-.", ".'  :", " `: :", "  : :", "  :_;"],
+  2: [".---. ", "`--. :", "  ,','", ".'.'_ ", ":____;"],
+  3: [".----.", "`--  ;", " .' ' ", " _`,`.", "`.__.'"],
+  4: ["  .-. ", " .'.' ", ".'.'_ ", ":_ ` :", "  :_: "],
+  5: [".----.", ": .--'", "`. `. ", ".-`, :", "`.__.'"],
+  6: ["  .-. ", " .'.' ", ".' '. ", ": .; :", "`.__.'"],
+  7: [".----.", "`--  ;", " ,',' ", " : :  ", " :_:  "],
+  8: [" .--. ", ": .; :", "`.  .'", ": .; :", "`.__.'"],
+  9: [" .--. ", ": .; :", "`._, :", "   : :", "   :_:"],
+  ":": ["   ", " _ ", ":_:", " _ ", ":_;"],
+};
+
+function getAsciiTime(parentElement) {
+  parentElement.textContent = ""; // clear default text
+  const time = "6:07";
+  let timeRows = ["", "", "", "", "", ""];
+  // fill out time rows with ascii lookup
+  for (const char of time) {
+    for (let i = 0; i < timeRows.length; i++) {
+      timeRows[i] += asciiNumberLookup[char][i];
+    }
+  }
+  // create pre element for each row and append to parent div
+  timeRows.forEach((row) => {
+    const pre = document.createElement("pre");
+    pre.style.margin = "0";
+    pre.textContent = row;
+    parentElement.appendChild(pre);
+  });
+}
+
+getAsciiTime(document.getElementById("ascii-clock"));
