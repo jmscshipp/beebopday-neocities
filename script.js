@@ -252,23 +252,70 @@ const asciiNumberLookup = {
   ":": ["   ", " _ ", ":_:", " _ ", ":_;"],
 };
 
-function getAsciiTime(parentElement) {
+const periodLookup = {
+  am: [" __ _ _ __  ", "/ _` | '  \\ ", "\\__,_|_|_|_|", "            "],
+  pm: [" _ __ _ __  ", "| '_ \\ '  \\ ", "| .__/_|_|_|", "|_|         "],
+};
+
+function updateAsciiClock() {
+  const parentElement = document.getElementById("ascii-clock");
   parentElement.textContent = ""; // clear default text
-  const time = "6:07";
-  let timeRows = ["", "", "", "", "", ""];
+  let timeRows = ["", "", "", "", ""];
+  // time string parsing
+  const time = new Date();
+  const timeStr =
+    (time.getHours() % 12 || 12) +
+    ":" +
+    (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
+  const period = time.getHours() >= 12 ? "pm" : "am";
+
   // fill out time rows with ascii lookup
-  for (const char of time) {
+  for (const char of timeStr) {
     for (let i = 0; i < timeRows.length; i++) {
       timeRows[i] += asciiNumberLookup[char][i];
     }
   }
+
+  const timeContainer = document.createElement("div");
+  timeContainer.className = "side-by-side-no-gap";
+
+  const timeDisplay = document.createElement("div");
+  timeContainer.appendChild(timeDisplay);
+  const periodDisplay = document.createElement("div");
+  periodDisplay.style = "align-self: flex-end;";
+  timeContainer.appendChild(periodDisplay);
+  parentElement.appendChild(timeContainer);
+  const dateDisplay = document.createElement("div");
+  dateDisplay.textContent =
+    "- " +
+    time.toLocaleString("default", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }) +
+    " -";
+  dateDisplay.style = "justify-self: center";
+  parentElement.appendChild(dateDisplay);
   // create pre element for each row and append to parent div
   timeRows.forEach((row) => {
     const pre = document.createElement("pre");
     pre.style.margin = "0";
     pre.textContent = row;
-    parentElement.appendChild(pre);
+    timeDisplay.appendChild(pre);
+  });
+  timeDisplay.appendChild(document.createElement("pre"));
+
+  let periodRows = ["", "", "", ""];
+  for (let i = 0; i < periodRows.length; i++) {
+    periodRows[i] += periodLookup[period][i];
+  }
+  periodRows.forEach((row) => {
+    const pre = document.createElement("pre");
+    pre.style.margin = "0";
+    pre.textContent = row;
+    periodDisplay.appendChild(pre);
   });
 }
 
-getAsciiTime(document.getElementById("ascii-clock"));
+updateAsciiClock();
+setInterval(updateAsciiClock, 1000); // update every second
