@@ -1,106 +1,3 @@
-function generateWindowBorder(width, height) {
-  const top = "╔" + "─".repeat(width) + "╗";
-  const middle = "│" + " ".repeat(width) + "│";
-  const bottom = "╚" + "─".repeat(width) + "╝";
-
-  let border = top + "\n";
-  for (let i = 0; i < height; i++) {
-    border += middle + "\n";
-  }
-  border += bottom;
-
-  return border;
-}
-
-function generateHeaderBorder(width, height) {
-  const top = "╔" + "═".repeat(width) + "╗";
-  const middle = "║" + " ".repeat(width) + "║";
-  const bottom = "╚" + "═".repeat(width) + "╝";
-
-  let border = top + "\n";
-  for (let i = 0; i < height; i++) {
-    border += middle + "\n";
-  }
-  border += bottom;
-
-  return border;
-}
-
-function generateButtonBorder(width, selected = false) {
-  return "{" + (selected ? "▓" : "░").repeat(width) + "}";
-}
-
-function getCharSize() {
-  // temporarily add text element to measure size
-  const test = document.createElement("pre");
-  test.style =
-    "position: absolute; visibility: hidden; font-size: medium;font-family: monospace;";
-  test.textContent = "─";
-  document.body.appendChild(test);
-  const charWidth = test.offsetWidth;
-  const charHeight = test.offsetHeight;
-  document.body.removeChild(test);
-  return { charWidth, charHeight };
-}
-
-function wrapInAsciiBorder(element, type = "window", selected = false) {
-  // measure width and height
-  const { charWidth, charHeight } = getCharSize();
-  const width = Math.round(element.offsetWidth / charWidth);
-  const height = Math.round(element.offsetHeight / charHeight);
-  // create wrapper
-  const wrapper = document.createElement("div");
-  wrapper.className = "wrapper";
-  // create border
-  const border = document.createElement("pre");
-  if (type === "header") {
-    border.textContent = generateHeaderBorder(width - 3, height);
-  } else if (type === "button") {
-    border.textContent = generateButtonBorder(width, selected);
-  } else {
-    border.textContent = generateWindowBorder(width, height);
-  }
-  border.className = "border";
-  // wrap the element
-  element.parentNode.insertBefore(wrapper, element);
-  wrapper.appendChild(border);
-  wrapper.appendChild(element);
-}
-
-// generating ascii borders for all elements
-const buttons = document.querySelectorAll(".bordered-button");
-buttons.forEach((element) => {
-  wrapInAsciiBorder(element, "button");
-});
-document.querySelectorAll(".window").forEach((element) => {
-  wrapInAsciiBorder(element, "window");
-});
-document.querySelectorAll(".header").forEach((element) => {
-  wrapInAsciiBorder(element, "header");
-});
-
-// hover effect for buttons
-buttons.forEach((button) => {
-  button.addEventListener(
-    "mouseenter",
-    () =>
-      (button.parentElement.querySelector(".border").textContent =
-        generateButtonBorder(
-          Math.round(button.offsetWidth / getCharSize().charWidth),
-          true,
-        )),
-  );
-  button.addEventListener(
-    "mouseleave",
-    () =>
-      (button.parentElement.querySelector(".border").textContent =
-        generateButtonBorder(
-          Math.round(button.offsetWidth / getCharSize().charWidth),
-          false,
-        )),
-  );
-});
-
 async function populateThoughtCabinet() {
   const fileLocation = "/thoughts.json";
   try {
@@ -201,42 +98,6 @@ function updateScrollbar(charHeightNum) {
   scrollbar.textContent = thumbString;
 }
 
-// under construction text animation
-const constructionZones = document.querySelectorAll(".construction-zone");
-let lastShiftedTime = 0;
-
-document.fonts.ready.then(() => {
-  // setting up pre elements w/ text for each construction zone
-  for (const zone of constructionZones) {
-    zone.textContent = ""; // clear default text
-    let topText = document.createElement("pre");
-    topText.style.margin = "0";
-    topText.textContent =
-      "    ._   _|  _  ._     _  _  ._   _ _|_ ._     _ _|_ o  _  ._     ";
-    let bottomText = document.createElement("pre");
-    bottomText.style.margin = "0";
-    bottomText.textContent =
-      "|_| | | (_| (/_ |     (_ (_) | | _>  |_ | |_| (_  |_ | (_) | |    ";
-    zone.appendChild(topText);
-    zone.appendChild(bottomText);
-  }
-  requestAnimationFrame(frame); // single loop for all
-});
-
-function frame() {
-  // shifting text every 150ms
-  if (Date.now() - lastShiftedTime > 150) {
-    constructionZones.forEach((zone) => {
-      [...zone.children].forEach((textDisplay) => {
-        const text = textDisplay.textContent;
-        textDisplay.textContent = text.slice(1) + text[0];
-      });
-    });
-    lastShiftedTime = Date.now();
-  }
-  requestAnimationFrame(frame);
-}
-
 // time display
 const asciiNumberLookup = {
   0: [" .--. ", ": ,. :", ": :: :", ": :; :", "`.__.'"],
@@ -253,38 +114,61 @@ const asciiNumberLookup = {
 };
 
 const periodLookup = {
-  am: [" __ _ _ __  ", "/ _` | '  \\ ", "\\__,_|_|_|_|", "            "],
+  am: [" __ _ _ __  ", "/ _` | '  \\ ", "\\__,_|_|_|_|", "            "], // period means am / pm
   pm: [" _ __ _ __  ", "| '_ \\ '  \\ ", "| .__/_|_|_|", "|_|         "],
 };
 
 function updateAsciiClock() {
   const parentElement = document.getElementById("ascii-clock");
   parentElement.textContent = ""; // clear default text
+
+  const timeContainer = document.createElement("div");
+  parentElement.appendChild(timeContainer);
+  timeContainer.className = "side-by-side-no-gap";
+
+  // clock display
+  const timeDisplay = document.createElement("div");
+  timeContainer.appendChild(timeDisplay);
   let timeRows = ["", "", "", "", ""];
-  // time string parsing
   const time = new Date();
+
   const timeStr =
     (time.getHours() % 12 || 12) +
     ":" +
     (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
-  const period = time.getHours() >= 12 ? "pm" : "am";
 
-  // fill out time rows with ascii lookup
   for (const char of timeStr) {
     for (let i = 0; i < timeRows.length; i++) {
       timeRows[i] += asciiNumberLookup[char][i];
     }
   }
 
-  const timeContainer = document.createElement("div");
-  timeContainer.className = "side-by-side-no-gap";
+  timeRows.forEach((row) => {
+    const pre = document.createElement("pre");
+    pre.style.margin = "0";
+    pre.textContent = row;
+    timeDisplay.appendChild(pre);
+  });
+  timeDisplay.appendChild(document.createElement("pre"));
 
-  const timeDisplay = document.createElement("div");
-  timeContainer.appendChild(timeDisplay);
+  // period display
   const periodDisplay = document.createElement("div");
   periodDisplay.style = "align-self: flex-end;";
   timeContainer.appendChild(periodDisplay);
-  parentElement.appendChild(timeContainer);
+  const periodRows = ["", "", "", ""];
+  const period = time.getHours() >= 12 ? "pm" : "am";
+  for (let i = 0; i < periodRows.length; i++) {
+    periodRows[i] += periodLookup[period][i];
+  }
+
+  periodRows.forEach((row) => {
+    const pre = document.createElement("pre");
+    pre.style.margin = "0";
+    pre.textContent = row;
+    periodDisplay.appendChild(pre);
+  });
+
+  // date display
   const dateDisplay = document.createElement("div");
   dateDisplay.textContent =
     "- " +
@@ -295,27 +179,176 @@ function updateAsciiClock() {
     }) +
     " -";
   dateDisplay.style = "justify-self: center";
+  parentElement.appendChild(document.createElement("br"));
   parentElement.appendChild(dateDisplay);
-  // create pre element for each row and append to parent div
-  timeRows.forEach((row) => {
-    const pre = document.createElement("pre");
-    pre.style.margin = "0";
-    pre.textContent = row;
-    timeDisplay.appendChild(pre);
-  });
-  timeDisplay.appendChild(document.createElement("pre"));
 
-  let periodRows = ["", "", "", ""];
-  for (let i = 0; i < periodRows.length; i++) {
-    periodRows[i] += periodLookup[period][i];
-  }
-  periodRows.forEach((row) => {
-    const pre = document.createElement("pre");
-    pre.style.margin = "0";
-    pre.textContent = row;
-    periodDisplay.appendChild(pre);
-  });
+  // emotion of the day display
+  const emotions = [
+    ":V",
+    "(>_<)",
+    "(O_O)/",
+    "\\(^_^;)",
+    "\\<+_+>/",
+    ":-D",
+    ":-O",
+    "{^_^}7",
+    "(^o^)/",
+    ":-U",
+    "[T_T]",
+    "t(<_<)t",
+    "{-_-}7",
+  ];
+  const emotionDisplay = document.createElement("div");
+  emotionDisplay.style = "justify-self: center";
+  emotionDisplay.textContent =
+    "today's emotion: " + emotions[time.getDate() % emotions.length];
+  parentElement.appendChild(emotionDisplay);
 }
 
 updateAsciiClock();
 setInterval(updateAsciiClock, 1000); // update every second
+
+// under construction text animation
+const constructionZones = document.querySelectorAll(".construction-zone");
+let lastShiftedTime = 0;
+
+function frame() {
+  // shifting text every 150ms
+  if (Date.now() - lastShiftedTime > 500) {
+    constructionZones.forEach((zone) => {
+      [...zone.children].forEach((textDisplay) => {
+        const text = textDisplay.textContent;
+        textDisplay.textContent = text.slice(1) + text[0];
+      });
+    });
+    lastShiftedTime = Date.now();
+  }
+  requestAnimationFrame(frame);
+}
+
+document.fonts.ready.then(() => {
+  // setting up pre elements w/ text for each construction zone
+  for (const zone of constructionZones) {
+    zone.textContent = "";
+    let scrollingText = document.createElement("pre");
+    scrollingText.textContent =
+      "under construction under construction under construction under construction ";
+    scrollingText.style.fontStyle = "italic";
+    zone.append(scrollingText);
+  }
+  requestAnimationFrame(frame); // single loop for all
+});
+
+function generateWindowBorder(width, height) {
+  const top = "╔" + "─".repeat(width) + "╗";
+  const middle = "│" + " ".repeat(width) + "│";
+  const bottom = "╚" + "─".repeat(width) + "╝";
+
+  let border = top + "\n";
+  for (let i = 0; i < height; i++) {
+    border += middle + "\n";
+  }
+  border += bottom;
+
+  return border;
+}
+
+function generateHeaderBorder(width, height) {
+  const top = "╔" + "═".repeat(width) + "╗";
+  const middle = "║" + " ".repeat(width) + "║";
+  const bottom = "╚" + "═".repeat(width) + "╝";
+
+  let border = top + "\n";
+  for (let i = 0; i < height; i++) {
+    border += middle + "\n";
+  }
+  border += bottom;
+
+  return border;
+}
+
+function generateButtonBorder(width, selected = false) {
+  return "{" + (selected ? "▓" : "░").repeat(width) + "}";
+}
+
+function getCharSize() {
+  // temporarily add text element to measure size
+  const test = document.createElement("pre");
+  test.style =
+    "position: absolute; visibility: hidden; font-size: medium;font-family: monospace;";
+  test.textContent = "─";
+  document.body.appendChild(test);
+  const charWidth = test.offsetWidth;
+  const charHeight = test.offsetHeight;
+  document.body.removeChild(test);
+  return { charWidth, charHeight };
+}
+
+function wrapInAsciiBorder(element, type = "window", selected = false) {
+  const { charWidth, charHeight } = getCharSize();
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "wrapper";
+  // transfer flex1 to the wrapper so it does the stretching, not the inner element
+  wrapper.className = element.className.includes("flex1")
+    ? "wrapper flex1"
+    : "wrapper";
+  element.classList.remove("flex1");
+
+  element.parentNode.insertBefore(wrapper, element);
+  wrapper.appendChild(element); // add element first so it establishes wrapper size
+
+  // measure AFTER element is in DOM and wrapper has settled
+  const width = Math.floor(wrapper.offsetWidth / charWidth);
+  const height = Math.floor(wrapper.offsetHeight / charHeight) - 1;
+
+  const buttonWidth = Math.ceil(element.offsetWidth / charWidth);
+
+  const border = document.createElement("pre");
+  if (type === "header") {
+    border.textContent = generateHeaderBorder(width - 3, height);
+    border.style = "width: 60vw; margin: 0 auto;";
+  } else if (type === "button") {
+    border.textContent = generateButtonBorder(buttonWidth, selected);
+  } else {
+    border.textContent = generateWindowBorder(width, height);
+  }
+  border.className = "border";
+  border.style.pointerEvents = "none";
+
+  wrapper.appendChild(border); // border goes after so it overlays
+}
+
+// generating ascii borders for all elements
+const buttons = document.querySelectorAll(".bordered-button");
+buttons.forEach((element) => {
+  wrapInAsciiBorder(element, "button");
+});
+document.querySelectorAll(".new-window").forEach((element) => {
+  wrapInAsciiBorder(element, "window");
+});
+document.querySelectorAll(".header").forEach((element) => {
+  wrapInAsciiBorder(element, "header");
+});
+
+// hover effect for buttons
+buttons.forEach((button) => {
+  button.addEventListener(
+    "mouseenter",
+    () =>
+      (button.parentElement.querySelector(".border").textContent =
+        generateButtonBorder(
+          Math.ceil(button.offsetWidth / getCharSize().charWidth),
+          true,
+        )),
+  );
+  button.addEventListener(
+    "mouseleave",
+    () =>
+      (button.parentElement.querySelector(".border").textContent =
+        generateButtonBorder(
+          Math.ceil(button.offsetWidth / getCharSize().charWidth),
+          false,
+        )),
+  );
+});
