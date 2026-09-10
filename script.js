@@ -62,7 +62,7 @@ async function populateChangeLog() {
   }
 }
 
-//populateThoughtCabinet();
+populateThoughtCabinet();
 populateChangeLog();
 
 // changelog scrollbar graphics

@@ -122,6 +122,11 @@ p {
   gap: 2ch;
 }
 
+.horizontal {
+  display: flex;
+  gap: 2ch;
+}
+
 .ascii-flex {
   align-self: flex-end;
 }
@@ -185,4 +190,9 @@ p {
 }
 
 .construction-zone {
+}
+
+.calendar {
+  width: 30ch;
+  height: 25ch;
 }
