@@ -1,22 +1,18 @@
 body {
   background-color: #fff8ec;
-  height: 100vh;
   margin: 0;
   font-size: medium;
   font-family: monospace;
 }
 
+p {
+  padding: 0;
+  margin: 0;
+}
+
 .ascii-container {
   position: relative;
   display: inline-block;
-}
-
-.wrapper {
-  display: block;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  margin: 0;
 }
 
 .border {
@@ -25,11 +21,57 @@ body {
   left: 0;
   margin: 0;
 }
-.new-window {
+
+.bordered-window {
   position: relative;
+  display: block;
   box-sizing: border-box;
+  margin: 0;
   padding-left: 3ch;
   padding-top: 3ch;
+  padding-right: 2ch;
+  padding-bottom: 1ch;
+}
+
+.bordered-header {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  margin: 0;
+  padding-left: 2ch;
+  padding-top: 2.25ch;
+  padding-right: 1ch;
+  padding-bottom: 1ch;
+}
+
+.bordered-button {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  padding-left: 2ch;
+  margin: 0;
+}
+
+.ascii-window {
+}
+
+.ascii-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ascii-button {
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  color: black;
+}
+
+.ascii-button:hover {
+  cursor: pointer;
+  color: white;
 }
 
 .header {
@@ -62,12 +104,8 @@ body {
 .vertical-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.vertical-container {
-  height: 90vh;
-  overflow: hidden;
+  align-items: center;
+  gap: 2ch;
 }
 
 .square {
@@ -78,12 +116,10 @@ body {
   width: 37ch;
 }
 
-.horizontal-container {
+.horizontal-stack {
   display: flex;
-  gap: 20px;
-  width: 60vw;
-  margin: 0 auto;
-  min-height: 0;
+  width: 150ch;
+  gap: 2ch;
 }
 
 .ascii-flex {
@@ -142,20 +178,6 @@ body {
   margin: 0;
   list-style: disc;
   margin-left: 20px;
-}
-
-.bordered-button {
-  text-decoration: none;
-  color: black;
-  position: absolute;
-  font-size: medium;
-  font-family: monospace;
-  padding-left: 2ch;
-}
-
-.bordered-button:hover {
-  cursor: pointer;
-  color: white;
 }
 
 .disabled {

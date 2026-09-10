@@ -53,12 +53,16 @@ async function populateChangeLog() {
         updateScrollbar(charHeightNum),
       );
     });
+    const wrapper = changeLog.closest(".bordered-window");
+    const existingBorder = wrapper.querySelector(".border");
+    if (existingBorder) existingBorder.remove();
+    createAsciiBorder(wrapper, "window");
   } catch (error) {
     console.error(error.message);
   }
 }
 
-populateThoughtCabinet();
+//populateThoughtCabinet();
 populateChangeLog();
 
 // changelog scrollbar graphics
@@ -208,6 +212,7 @@ function updateAsciiClock() {
 updateAsciiClock();
 setInterval(updateAsciiClock, 1000); // update every second
 
+/*
 // under construction text animation
 const constructionZones = document.querySelectorAll(".construction-zone");
 let lastShiftedTime = 0;
@@ -238,6 +243,65 @@ document.fonts.ready.then(() => {
   }
   requestAnimationFrame(frame); // single loop for all
 });
+*/
+
+function getCharSize() {
+  // temporarily add text element to measure size
+  const test = document.createElement("pre");
+  test.style =
+    "position: absolute; visibility: hidden; font-size: medium;font-family: monospace;";
+  test.textContent = "─";
+  document.body.appendChild(test);
+  const charWidth = test.offsetWidth;
+  const charHeight = test.offsetHeight;
+  document.body.removeChild(test);
+  return { charWidth, charHeight };
+}
+
+function wrapAsciiElement(element, type = "window") {
+  const wrapper = document.createElement("div");
+
+  // transfer style from the element to the wrapper
+  element.classList.forEach((element) => {
+    if (
+      element === "ascii-window" ||
+      element === "ascii-header" ||
+      element === "ascii-button"
+    )
+      return;
+    wrapper.classList.add(element);
+  });
+
+  if (type === "header") wrapper.classList.add("bordered-header");
+  else if (type === "button") wrapper.classList.add("bordered-button");
+  else wrapper.classList.add("bordered-window");
+
+  element.parentNode.insertBefore(wrapper, element);
+  wrapper.appendChild(element); // add element first so it establishes wrapper size
+}
+
+function createAsciiBorder(wrapper, type = "window", selected = false) {
+  const { charWidth, charHeight } = getCharSize();
+
+  // measure AFTER element is in DOM and wrapper has settled
+  const width = Math.floor(wrapper.offsetWidth / charWidth);
+  const height = Math.floor(wrapper.offsetHeight / charHeight) - 1;
+  const border = document.createElement("pre");
+
+  if (type === "header") {
+    border.textContent = generateHeaderBorder(width - 4, height);
+  } else if (type === "button") {
+    const buttonWidth =
+      Math.ceil(wrapper.firstChild.offsetWidth / charWidth) + 1;
+    border.textContent = generateButtonBorder(buttonWidth, selected);
+  } else {
+    border.textContent = generateWindowBorder(width - 2, height);
+  }
+  border.className = "border";
+  border.style.pointerEvents = "none";
+
+  wrapper.appendChild(border); // border goes after so it overlays
+}
 
 function generateWindowBorder(width, height) {
   const top = "╔" + "─".repeat(width) + "╗";
@@ -271,74 +335,39 @@ function generateButtonBorder(width, selected = false) {
   return "{" + (selected ? "▓" : "░").repeat(width) + "}";
 }
 
-function getCharSize() {
-  // temporarily add text element to measure size
-  const test = document.createElement("pre");
-  test.style =
-    "position: absolute; visibility: hidden; font-size: medium;font-family: monospace;";
-  test.textContent = "─";
-  document.body.appendChild(test);
-  const charWidth = test.offsetWidth;
-  const charHeight = test.offsetHeight;
-  document.body.removeChild(test);
-  return { charWidth, charHeight };
-}
-
-function wrapInAsciiBorder(element, type = "window", selected = false) {
-  const { charWidth, charHeight } = getCharSize();
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "wrapper";
-  // transfer flex1 to the wrapper so it does the stretching, not the inner element
-  wrapper.className = element.className.includes("flex1")
-    ? "wrapper flex1"
-    : "wrapper";
-  element.classList.remove("flex1");
-
-  element.parentNode.insertBefore(wrapper, element);
-  wrapper.appendChild(element); // add element first so it establishes wrapper size
-
-  // measure AFTER element is in DOM and wrapper has settled
-  const width = Math.floor(wrapper.offsetWidth / charWidth);
-  const height = Math.floor(wrapper.offsetHeight / charHeight) - 1;
-
-  const buttonWidth = Math.ceil(element.offsetWidth / charWidth);
-
-  const border = document.createElement("pre");
-  if (type === "header") {
-    border.textContent = generateHeaderBorder(width - 3, height);
-    border.style = "width: 60vw; margin: 0 auto;";
-  } else if (type === "button") {
-    border.textContent = generateButtonBorder(buttonWidth, selected);
-  } else {
-    border.textContent = generateWindowBorder(width, height);
-  }
-  border.className = "border";
-  border.style.pointerEvents = "none";
-
-  wrapper.appendChild(border); // border goes after so it overlays
-}
-
-// generating ascii borders for all elements
-const buttons = document.querySelectorAll(".bordered-button");
-buttons.forEach((element) => {
-  wrapInAsciiBorder(element, "button");
+// wrap all elements
+document.querySelectorAll(".ascii-window").forEach((element) => {
+  wrapAsciiElement(element, "window");
 });
-document.querySelectorAll(".new-window").forEach((element) => {
-  wrapInAsciiBorder(element, "window");
+document.querySelectorAll(".ascii-header").forEach((element) => {
+  wrapAsciiElement(element, "header");
 });
-document.querySelectorAll(".header").forEach((element) => {
-  wrapInAsciiBorder(element, "header");
+document.querySelectorAll(".ascii-button").forEach((element) => {
+  wrapAsciiElement(element, "button");
+});
+
+// generate ascii borders
+document.querySelectorAll(".bordered-window").forEach((element) => {
+  createAsciiBorder(element, "window");
+});
+
+document.querySelectorAll(".bordered-header").forEach((element) => {
+  createAsciiBorder(element, "header");
+});
+
+document.querySelectorAll(".bordered-button").forEach((element) => {
+  createAsciiBorder(element, "button");
 });
 
 // hover effect for buttons
+const buttons = document.querySelectorAll(".ascii-button");
 buttons.forEach((button) => {
   button.addEventListener(
     "mouseenter",
     () =>
       (button.parentElement.querySelector(".border").textContent =
         generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth),
+          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 1,
           true,
         )),
   );
@@ -347,7 +376,7 @@ buttons.forEach((button) => {
     () =>
       (button.parentElement.querySelector(".border").textContent =
         generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth),
+          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 1,
           false,
         )),
   );
