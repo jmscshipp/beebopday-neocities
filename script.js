@@ -249,7 +249,7 @@ function getCharSize() {
   // temporarily add text element to measure size
   const test = document.createElement("pre");
   test.style =
-    "position: absolute; visibility: hidden; font-size: medium;font-family: monospace;";
+    "position: absolute; visibility: hidden; font-size: large;font-family: monospace;";
   test.textContent = "─";
   document.body.appendChild(test);
   const charWidth = test.offsetWidth;

@@ -1,7 +1,7 @@
 body {
   background-color: #fff8ec;
   margin: 0;
-  font-size: medium;
+  font-size: large;
   font-family: monospace;
 }
 
@@ -27,10 +27,8 @@ p {
   display: block;
   box-sizing: border-box;
   margin: 0;
-  padding-left: 3ch;
-  padding-top: 3ch;
-  padding-right: 2ch;
-  padding-bottom: 1ch;
+  padding: 3ch;
+  padding-left: 2ch;
 }
 
 .bordered-header {
@@ -81,7 +79,7 @@ p {
 .header {
   font-size: medium;
   font-family: monospace;
-  width: 60vw;
+  width: 130ch;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -116,14 +114,9 @@ p {
   aspect-ratio: 1 / 1;
 }
 
-.max-width {
-  width: 37ch;
-}
-
 .horizontal-stack {
   display: flex;
-  width: 150ch;
-  gap: 2ch;
+  width: 130ch;
 }
 
 .horizontal-group {
@@ -161,11 +154,6 @@ p {
   justify-content: flex-end;
 }
 
-.container {
-  background-color: greenyellow;
-  display: flex;
-}
-
 .center-self {
   align-self: center;
   margin: 0;
@@ -197,7 +185,7 @@ p {
 
 .scroll {
   overflow: auto;
-  height: 100px;
+  height: 26ch;
   scrollbar-width: none;
 }
 
