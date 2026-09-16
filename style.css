@@ -10,6 +10,12 @@ p {
   margin: 0;
 }
 
+ul {
+  padding: 0;
+  padding-left: 2ch;
+  margin: 0;
+}
+
 .ascii-container {
   position: relative;
   display: inline-block;
@@ -27,8 +33,8 @@ p {
   display: block;
   box-sizing: border-box;
   margin: 0;
-  padding: 3ch;
-  padding-left: 2ch;
+  padding: 2ch;
+  padding-right: 1.5ch;
 }
 
 .bordered-header {
@@ -38,7 +44,7 @@ p {
   margin: 0;
   padding-left: 2ch;
   padding-top: 2.25ch;
-  padding-right: 1ch;
+  padding-right: 2ch;
   padding-bottom: 1ch;
 }
 
@@ -60,6 +66,8 @@ p {
 .ascii-header {
   display: flex;
   justify-content: space-between;
+  width: 127ch;
+  margin-bottom: 1ch;
 }
 
 .ascii-button {
@@ -76,18 +84,6 @@ p {
   color: white;
 }
 
-.header {
-  font-size: medium;
-  font-family: monospace;
-  width: 130ch;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-left: 1ch;
-  padding-top: 2ch;
-}
-
 .ascii-art {
   font-family: monospace;
   white-space: pre;
@@ -96,18 +92,14 @@ p {
 
 .side-by-side {
   display: flex;
-  gap: 20px;
-}
-
-.side-by-side-no-gap {
-  display: flex;
+  justify-content: center;
 }
 
 .vertical-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2ch;
+  border: 1px solid red;
 }
 
 .square {
@@ -117,6 +109,7 @@ p {
 .horizontal-stack {
   display: flex;
   width: 130ch;
+  gap: 2ch;
 }
 
 .horizontal-group {
@@ -127,7 +120,6 @@ p {
 .vertical-group {
   display: flex;
   flex-direction: column;
-  gap: 2ch;
 }
 
 .ascii-flex {

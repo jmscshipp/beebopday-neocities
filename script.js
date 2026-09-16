@@ -128,7 +128,7 @@ function updateAsciiClock() {
 
   const timeContainer = document.createElement("div");
   parentElement.appendChild(timeContainer);
-  timeContainer.className = "side-by-side-no-gap";
+  timeContainer.className = "side-by-side";
 
   // clock display
   const timeDisplay = document.createElement("div");
@@ -172,6 +172,12 @@ function updateAsciiClock() {
     periodDisplay.appendChild(pre);
   });
 
+  const subContainer = document.createElement("div");
+  subContainer.style =
+    "display: flex; flex-direction: column; gap: 1ch; align-items: center;";
+  parentElement.append(subContainer);
+  subContainer.append(document.createElement("br"));
+
   // date display
   const dateDisplay = document.createElement("div");
   dateDisplay.textContent =
@@ -182,9 +188,7 @@ function updateAsciiClock() {
       year: "numeric",
     }) +
     " -";
-  dateDisplay.style = "justify-self: center";
-  parentElement.appendChild(document.createElement("br"));
-  parentElement.appendChild(dateDisplay);
+  subContainer.appendChild(dateDisplay);
 
   // emotion of the day display
   const emotions = [
@@ -203,10 +207,23 @@ function updateAsciiClock() {
     "{-_-}7",
   ];
   const emotionDisplay = document.createElement("div");
-  emotionDisplay.style = "justify-self: center";
   emotionDisplay.textContent =
     "today's emotion: " + emotions[time.getDate() % emotions.length];
-  parentElement.appendChild(emotionDisplay);
+  subContainer.appendChild(emotionDisplay);
+
+  // welcome message display
+  const welcomeMessages = [
+    "Welcome! I'm glad you're here",
+    "Oh good, you made it",
+    "Hi! I hope your day is going well",
+    "Welcome to ascii world",
+    "Welcome to my website!",
+    "Hello, fellow internet explorer",
+  ];
+  const welcomeMessage = document.createElement("div");
+  welcomeMessage.textContent =
+    welcomeMessages[time.getDate() % welcomeMessages.length];
+  subContainer.appendChild(welcomeMessage);
 }
 
 updateAsciiClock();
@@ -289,13 +306,13 @@ function createAsciiBorder(wrapper, type = "window", selected = false) {
   const border = document.createElement("pre");
 
   if (type === "header") {
-    border.textContent = generateHeaderBorder(width - 4, height);
+    border.textContent = generateHeaderBorder(width + 1, height);
   } else if (type === "button") {
     const buttonWidth =
-      Math.ceil(wrapper.firstChild.offsetWidth / charWidth) + 1;
+      Math.ceil(wrapper.firstChild.offsetWidth / charWidth) + 2;
     border.textContent = generateButtonBorder(buttonWidth, selected);
   } else {
-    border.textContent = generateWindowBorder(width - 2, height);
+    border.textContent = generateWindowBorder(width, height);
   }
   border.className = "border";
   border.style.pointerEvents = "none";
@@ -367,7 +384,7 @@ buttons.forEach((button) => {
     () =>
       (button.parentElement.querySelector(".border").textContent =
         generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 1,
+          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
           true,
         )),
   );
@@ -376,7 +393,7 @@ buttons.forEach((button) => {
     () =>
       (button.parentElement.querySelector(".border").textContent =
         generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 1,
+          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
           false,
         )),
   );
