@@ -99,7 +99,18 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid red;
+}
+
+.vertical-spaced-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1ch;
+}
+
+.vertical-bigger-spaced-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2ch;
 }
 
 .square {
@@ -177,7 +188,7 @@ ul {
 
 .scroll {
   overflow: auto;
-  height: 26ch;
+  height: 28ch;
   scrollbar-width: none;
 }
 

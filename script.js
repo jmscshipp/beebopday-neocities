@@ -16,6 +16,19 @@ async function populateThoughtCabinet() {
   }
 }
 
+function formatDate(date) {
+  let formattedDate = "";
+  const objectDate = new Date(date);
+  let hours = objectDate.getHours();
+  hours = hours % 12 === 0 ? 12 : hours % 12;
+  let minutes = objectDate.getMinutes();
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  const meridiem = hours >= 12 ? "pm" : "am";
+  formattedDate += objectDate.toLocaleDateString();
+  formattedDate += ` ${hours}:${minutes} ${meridiem}`;
+  return formattedDate;
+}
+
 async function populateChangeLog() {
   const fileLocation = "/site-updates.json";
   try {
@@ -24,19 +37,17 @@ async function populateChangeLog() {
       throw new Error(`Response status: ${response.status}`);
     }
     let data = await response.json();
-    data.siteUpdates.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    data.siteUpdates.sort((a, b) => new Date(a.date) - new Date(b.date));
     const changeLog = document.getElementById("change-log");
     for (update of data.siteUpdates) {
       const container = document.createElement("div");
-      container.class = "";
+      container.classList.add("vertical-spaced-stack");
       const content = document.createElement("p");
-      content.class = "";
-      content.innerHTML = update.content;
+      content.textContent = update.content;
       const date = document.createElement("p");
-      date.class = "";
-      date.innerHTML = update.date;
-      container.appendChild(content);
+      date.textContent = formatDate(update.date);
       container.appendChild(date);
+      container.appendChild(content);
       changeLog.appendChild(container);
     }
     document.fonts.ready.then(() => {
