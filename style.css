@@ -16,11 +16,6 @@ ul {
   margin: 0;
 }
 
-.ascii-container {
-  position: relative;
-  display: inline-block;
-}
-
 .border {
   position: absolute;
   top: 0;
@@ -43,6 +38,10 @@ ul {
   margin: 0;
   padding: 2ch;
   padding-right: 1.5ch;
+}
+
+.bordered-window > .ascii-window {
+  height: 100%;
 }
 
 .bordered-header {
@@ -121,10 +120,6 @@ ul {
   gap: 2ch;
 }
 
-.square {
-  aspect-ratio: 1 / 1;
-}
-
 .horizontal-stack {
   display: flex;
   width: 130ch;
@@ -151,14 +146,6 @@ ul {
 
 .flex2 {
   flex: 2;
-}
-
-.flex3 {
-  flex: 3;
-}
-
-.right {
-  justify-content: flex-end;
 }
 
 .center-self {
@@ -190,9 +177,15 @@ ul {
   margin-bottom: 1.5ch;
 }
 
-.scroll {
+.thought-cabinet-scroll {
   overflow: auto;
-  height: 28ch;
+  height: 64ch;
+  scrollbar-width: none;
+}
+
+.change-log-scroll {
+  overflow: auto;
+  height: 30ch;
   scrollbar-width: none;
 }
 
@@ -201,6 +194,7 @@ ul {
   white-space: pre;
   writing-mode: vertical-rl;
   text-orientation: upright;
+  margin-right: -0.5ch;
 }
 .no-indent-list {
   padding: 0;
@@ -213,9 +207,6 @@ ul {
   display: none;
 }
 
-.construction-zone {
-}
-
 .calendar {
   width: 30ch;
   height: 25ch;
@@ -225,4 +216,9 @@ ul {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1ch;
+  margin-right: -0.5ch;
+}
+
+.extra-bottom-padding {
+  padding-bottom: 1ch;
 }

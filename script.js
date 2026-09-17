@@ -85,23 +85,15 @@ document.fonts.ready.then(() => {
 function updateScrollbar(content, scrollbar, charHeightNum) {
   const scrollPercentage =
     content.scrollTop / (content.scrollHeight - content.clientHeight);
-  const thumbIndex = Math.round(scrollPercentage * (charHeightNum - 2));
+  const thumbIndex = Math.round(scrollPercentage * (charHeightNum - 1));
   let thumbString = "";
   if (thumbIndex == 0) {
     thumbString += "o";
-    thumbString += ":".repeat(charHeightNum - 2);
+    thumbString += ":".repeat(charHeightNum - 1);
   } else {
-    for (let i = 0; i < charHeightNum - 1; i++) {
-      console.log(
-        "i = " +
-          i +
-          " thumbIndex = " +
-          thumbIndex +
-          " charHeightNum - 2 = " +
-          (charHeightNum - 2),
-      );
+    for (let i = 0; i < charHeightNum; i++) {
       if (i == thumbIndex) {
-        if (i == charHeightNum - 2) {
+        if (i == charHeightNum - 1) {
           thumbString += "x";
         } else {
           thumbString += "o";
@@ -371,6 +363,10 @@ function generateButtonBorder(width, selected = false) {
   return "{" + (selected ? "▓" : "░").repeat(width) + "}";
 }
 
+let readyAreas = 0;
+function readyToWrap() {
+  readyAreas++;
+}
 // wrap all elements
 document.querySelectorAll(".ascii-window").forEach((element) => {
   wrapAsciiElement(element, "window");
