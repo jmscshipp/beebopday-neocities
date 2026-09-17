@@ -28,6 +28,14 @@ ul {
   margin: 0;
 }
 
+.window-background-fill {
+  width: 100%;
+  height: calc(100% - 2ch);
+  background-color: white;
+  z-index: -1;
+  margin-top: 1ch;
+}
+
 .bordered-window {
   position: relative;
   display: block;
@@ -137,10 +145,6 @@ ul {
   align-self: flex-end;
 }
 
-.window-test {
-  border: 2px solid black;
-}
-
 .flex1 {
   flex: 1;
 }
@@ -192,7 +196,7 @@ ul {
   scrollbar-width: none;
 }
 
-#scroll-bar {
+.scroll-bar {
   width: 1ch;
   white-space: pre;
   writing-mode: vertical-rl;
@@ -215,4 +219,10 @@ ul {
 .calendar {
   width: 30ch;
   height: 25ch;
+}
+
+.thought-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1ch;
 }

@@ -8,9 +8,11 @@ async function populateThoughtCabinet() {
     let data = await response.json();
     data.thoughts.sort((a, b) => new Date(a.Date) - new Date(b.Date));
     document.getElementById("thought-title").innerHTML = data.thoughts[0].title;
+    document.getElementById("thought-date").innerHTML = formatDate(
+      data.thoughts[0].date,
+    );
     document.getElementById("thought-content").innerHTML =
       data.thoughts[0].content;
-    document.getElementById("thought-date").innerHTML = data.thoughts[0].date;
   } catch (error) {
     console.error(error.message);
   }
@@ -20,10 +22,10 @@ function formatDate(date) {
   let formattedDate = "";
   const objectDate = new Date(date);
   let hours = objectDate.getHours();
+  const meridiem = hours >= 12 ? "pm" : "am";
   hours = hours % 12 === 0 ? 12 : hours % 12;
   let minutes = objectDate.getMinutes();
   minutes = minutes < 10 ? "0" + minutes : minutes;
-  const meridiem = hours >= 12 ? "pm" : "am";
   formattedDate += objectDate.toLocaleDateString();
   formattedDate += ` ${hours}:${minutes} ${meridiem}`;
   return formattedDate;
@@ -50,20 +52,6 @@ async function populateChangeLog() {
       container.appendChild(content);
       changeLog.appendChild(container);
     }
-    document.fonts.ready.then(() => {
-      // nothing to scroll
-      if (scrollContent.scrollHeight <= scrollContent.clientHeight) {
-        scrollbar.className = "disabled";
-        return;
-      }
-      const charHeightNum = Math.ceil(
-        scrollbar.offsetHeight / getCharSize().charHeight,
-      );
-      updateScrollbar(charHeightNum);
-      scrollContent.addEventListener("scroll", () =>
-        updateScrollbar(charHeightNum),
-      );
-    });
     const wrapper = changeLog.closest(".bordered-window");
     const existingBorder = wrapper.querySelector(".border");
     if (existingBorder) existingBorder.remove();
@@ -76,14 +64,27 @@ async function populateChangeLog() {
 populateThoughtCabinet();
 populateChangeLog();
 
-// changelog scrollbar graphics
-const scrollContent = document.getElementById("change-log");
-const scrollbar = document.getElementById("scroll-bar");
+document.fonts.ready.then(() => {
+  document.querySelectorAll(".scroll-bar").forEach((scrollBar) => {
+    const content = scrollBar.previousElementSibling;
+    // nothing to scroll
+    if (content.scrollHeight <= content.clientHeight) {
+      scrollBar.className = "disabled";
+      return;
+    }
+    const charHeightNum = Math.ceil(
+      scrollBar.offsetHeight / getCharSize().charHeight,
+    );
+    updateScrollbar(content, scrollBar, charHeightNum);
+    content.addEventListener("scroll", () =>
+      updateScrollbar(content, scrollBar, charHeightNum),
+    );
+  });
+});
 
-function updateScrollbar(charHeightNum) {
+function updateScrollbar(content, scrollbar, charHeightNum) {
   const scrollPercentage =
-    scrollContent.scrollTop /
-    (scrollContent.scrollHeight - scrollContent.clientHeight);
+    content.scrollTop / (content.scrollHeight - content.clientHeight);
   const thumbIndex = Math.round(scrollPercentage * (charHeightNum - 2));
   let thumbString = "";
   if (thumbIndex == 0) {
@@ -327,6 +328,13 @@ function createAsciiBorder(wrapper, type = "window", selected = false) {
   }
   border.className = "border";
   border.style.pointerEvents = "none";
+
+  if (type != "button") {
+    const backgroundFill = document.createElement("div");
+    backgroundFill.classList.add("border");
+    backgroundFill.classList.add("window-background-fill");
+    wrapper.appendChild(backgroundFill);
+  }
 
   wrapper.appendChild(border); // border goes after so it overlays
 }
