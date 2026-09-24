@@ -6,7 +6,7 @@ async function populateThoughtCabinet() {
       throw new Error(`Response status: ${response.status}`);
     }
     let data = await response.json();
-    data.thoughts.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    data.thoughts.sort((a, b) => new Date(a.date) - new Date(b.date));
     document.getElementById("thought-title").innerHTML = data.thoughts[0].title;
     document.getElementById("thought-date").innerHTML = formatDate(
       data.thoughts[0].date,
@@ -39,9 +39,9 @@ async function populateChangeLog() {
       throw new Error(`Response status: ${response.status}`);
     }
     let data = await response.json();
-    data.siteUpdates.sort((a, b) => new Date(a.date) - new Date(b.date));
+    data.siteUpdates.sort((a, b) => new Date(b.date) - new Date(a.date));
     const changeLog = document.getElementById("change-log");
-    for (update of data.siteUpdates) {
+    for (const update of data.siteUpdates) {
       const container = document.createElement("div");
       container.classList.add("vertical-spaced-stack");
       const content = document.createElement("p");
@@ -52,35 +52,10 @@ async function populateChangeLog() {
       container.appendChild(content);
       changeLog.appendChild(container);
     }
-    const wrapper = changeLog.closest(".bordered-window");
-    const existingBorder = wrapper.querySelector(".border");
-    if (existingBorder) existingBorder.remove();
-    createAsciiBorder(wrapper, "window");
   } catch (error) {
     console.error(error.message);
   }
 }
-
-populateThoughtCabinet();
-populateChangeLog();
-
-document.fonts.ready.then(() => {
-  document.querySelectorAll(".scroll-bar").forEach((scrollBar) => {
-    const content = scrollBar.previousElementSibling;
-    // nothing to scroll
-    if (content.scrollHeight <= content.clientHeight) {
-      scrollBar.className = "disabled";
-      return;
-    }
-    const charHeightNum = Math.ceil(
-      scrollBar.offsetHeight / getCharSize().charHeight,
-    );
-    updateScrollbar(content, scrollBar, charHeightNum);
-    content.addEventListener("scroll", () =>
-      updateScrollbar(content, scrollBar, charHeightNum),
-    );
-  });
-});
 
 function updateScrollbar(content, scrollbar, charHeightNum) {
   const scrollPercentage =
@@ -230,9 +205,6 @@ function updateAsciiClock() {
   subContainer.appendChild(welcomeMessage);
 }
 
-updateAsciiClock();
-setInterval(updateAsciiClock, 1000); // update every second
-
 /*
 // under construction text animation
 const constructionZones = document.querySelectorAll(".construction-zone");
@@ -269,8 +241,7 @@ document.fonts.ready.then(() => {
 function getCharSize() {
   // temporarily add text element to measure size
   const test = document.createElement("pre");
-  test.style =
-    "position: absolute; visibility: hidden; font-size: large;font-family: monospace;";
+  test.style = `position: absolute; visibility: hidden; font-size: 16px; font-family: "Lilex", monospace`;
   test.textContent = "─";
   document.body.appendChild(test);
   const charWidth = test.offsetWidth;
@@ -306,11 +277,12 @@ function createAsciiBorder(wrapper, type = "window", selected = false) {
 
   // measure AFTER element is in DOM and wrapper has settled
   const width = Math.floor(wrapper.offsetWidth / charWidth);
+
   const height = Math.floor(wrapper.offsetHeight / charHeight) - 1;
   const border = document.createElement("pre");
 
   if (type === "header") {
-    border.textContent = generateHeaderBorder(width + 1, height);
+    border.textContent = generateHeaderBorder(width + 4, height);
   } else if (type === "button") {
     const buttonWidth =
       Math.ceil(wrapper.firstChild.offsetWidth / charWidth) + 2;
@@ -363,53 +335,80 @@ function generateButtonBorder(width, selected = false) {
   return "{" + (selected ? "▓" : "░").repeat(width) + "}";
 }
 
-let readyAreas = 0;
-function readyToWrap() {
-  readyAreas++;
+const NECESSARY_CHARS = "╔╗═║╚╝▓░│─{}0";
+async function initialize() {
+  await document.fonts.load(`16px "Lilex"`, NECESSARY_CHARS);
+  await document.fonts.ready;
+
+  updateAsciiClock();
+  await Promise.all([populateChangeLog(), populateThoughtCabinet()]);
+
+  // scroll bars
+  document.querySelectorAll(".scroll-bar").forEach((scrollBar) => {
+    const content = scrollBar.previousElementSibling;
+
+    if (content.scrollHeight <= content.clientHeight) {
+      // nothing to scroll
+      scrollBar.className = "disabled";
+      return;
+    }
+    const charHeightNum = Math.ceil(
+      scrollBar.offsetHeight / getCharSize().charHeight,
+    );
+    updateScrollbar(content, scrollBar, charHeightNum);
+    content.addEventListener("scroll", () =>
+      updateScrollbar(content, scrollBar, charHeightNum),
+    );
+  });
+
+  // wrap all elements
+  document.querySelectorAll(".ascii-window").forEach((element) => {
+    wrapAsciiElement(element, "window");
+  });
+  document.querySelectorAll(".ascii-header").forEach((element) => {
+    wrapAsciiElement(element, "header");
+  });
+  document.querySelectorAll(".ascii-button").forEach((element) => {
+    wrapAsciiElement(element, "button");
+  });
+
+  // generate ascii borders
+  document.querySelectorAll(".bordered-window").forEach((element) => {
+    createAsciiBorder(element, "window");
+  });
+
+  document.querySelectorAll(".bordered-header").forEach((element) => {
+    createAsciiBorder(element, "header");
+  });
+
+  document.querySelectorAll(".bordered-button").forEach((element) => {
+    createAsciiBorder(element, "button");
+  });
+
+  // hover effect for buttons
+  const buttons = document.querySelectorAll(".ascii-button");
+  buttons.forEach((button) => {
+    button.addEventListener(
+      "mouseenter",
+      () =>
+        (button.parentElement.querySelector(".border").textContent =
+          generateButtonBorder(
+            Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
+            true,
+          )),
+    );
+    button.addEventListener(
+      "mouseleave",
+      () =>
+        (button.parentElement.querySelector(".border").textContent =
+          generateButtonBorder(
+            Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
+            false,
+          )),
+    );
+  });
+
+  setInterval(updateAsciiClock, 1000); // update every second
 }
-// wrap all elements
-document.querySelectorAll(".ascii-window").forEach((element) => {
-  wrapAsciiElement(element, "window");
-});
-document.querySelectorAll(".ascii-header").forEach((element) => {
-  wrapAsciiElement(element, "header");
-});
-document.querySelectorAll(".ascii-button").forEach((element) => {
-  wrapAsciiElement(element, "button");
-});
 
-// generate ascii borders
-document.querySelectorAll(".bordered-window").forEach((element) => {
-  createAsciiBorder(element, "window");
-});
-
-document.querySelectorAll(".bordered-header").forEach((element) => {
-  createAsciiBorder(element, "header");
-});
-
-document.querySelectorAll(".bordered-button").forEach((element) => {
-  createAsciiBorder(element, "button");
-});
-
-// hover effect for buttons
-const buttons = document.querySelectorAll(".ascii-button");
-buttons.forEach((button) => {
-  button.addEventListener(
-    "mouseenter",
-    () =>
-      (button.parentElement.querySelector(".border").textContent =
-        generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
-          true,
-        )),
-  );
-  button.addEventListener(
-    "mouseleave",
-    () =>
-      (button.parentElement.querySelector(".border").textContent =
-        generateButtonBorder(
-          Math.ceil(button.offsetWidth / getCharSize().charWidth) + 2,
-          false,
-        )),
-  );
-});
+initialize();

@@ -3,6 +3,10 @@
     {
       "content": "Site is published!",
       "date": "2026-09-17T15:50:00"
+    },
+    {
+      "content": "Fixed some bugs with window border drawing and changed font to Lilex",
+      "date": "2026-09-24T16:35:00"
     }
   ]
 }

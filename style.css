@@ -1,8 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Lilex:ital,wght@0,100..700;1,100..700&display=swap");
+
 body {
   background-color: #fff8ec;
   margin: 0;
-  font-size: large;
-  font-family: monospace;
+  font-family: "Lilex", monospace;
+  font-size: 16px;
 }
 
 p {
@@ -14,6 +16,14 @@ ul {
   padding: 0;
   padding-left: 2ch;
   margin: 0;
+}
+
+pre {
+  font-family: "Lilex", monospace;
+}
+
+b {
+  font-weight: 500;
 }
 
 .border {
@@ -37,7 +47,7 @@ ul {
   box-sizing: border-box;
   margin: 0;
   padding: 2ch;
-  padding-right: 1.5ch;
+  padding-right: 3ch;
 }
 
 .bordered-window > .ascii-window {
@@ -73,7 +83,7 @@ ul {
 .ascii-header {
   display: flex;
   justify-content: space-between;
-  width: 127ch;
+  width: 126ch;
   margin-bottom: 1ch;
 }
 
@@ -92,7 +102,7 @@ ul {
 }
 
 .ascii-art {
-  font-family: monospace;
+  font-family: "Lilex";
   white-space: pre;
   justify-self: center;
 }
@@ -221,4 +231,12 @@ ul {
 
 .extra-bottom-padding {
   padding-bottom: 1ch;
+}
+
+.about-me {
+  height: 79ch;
+}
+
+.bordered-button .border {
+  color: grey;
 }
