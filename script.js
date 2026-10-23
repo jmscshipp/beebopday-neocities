@@ -411,4 +411,26 @@ async function initialize() {
   setInterval(updateAsciiClock, 1000); // update every second
 }
 
+const mobileQuery = window.matchMedia("(max-width: 840px)");
+let mobileLayoutMode = mobileQuery.matches;
+
+mobileQuery.addEventListener("change", () => {
+  updateLayout();
+});
+
+function updateLayout() {
+  if (!mobileLayoutMode) return;
+
+  document.documentElement.innerHTML = "";
+  const apology = document.createElement("p");
+  apology.textContent =
+    "Sorryyy not ready for mobile yet! Load it up on ur laptop - James <3";
+  apology.style.fontFamily = "monospace";
+  apology.style.fontSize = "16px";
+  apology.style.backgroundColor = "#fff8ec";
+  apology.style.margin = "5px 5px";
+  document.documentElement.appendChild(apology);
+}
+
 initialize();
+updateLayout();
